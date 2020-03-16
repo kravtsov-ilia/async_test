@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  rabbitmq:
+    image: 'rabbitmq:3.6-management-alpine'
+    ports:
+      - '5672:5672'
+      - '15672:15672'
+    networks:
+      - network
+
+  producer:
+    build: producer/
+    command: python ./producer.py
+    restart: always
+    links:
+      - rabbitmq
+    depends_on:
+      - rabbitmq
+    networks:
+      - network
+
+  receiver:
+    build: receiver/
+    restart: always
+    command: python ./receiver.py
+    depends_on:
+      - rabbitmq
+    networks:
+      - network
+
+networks:
+  network: {}
